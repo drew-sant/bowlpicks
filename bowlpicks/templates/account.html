@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+Manage Account
+{% endblock %}
+
+{% block contentTitle %}
+USER Account
+{% endblock %}
+
+{% block content %}
+<div class="row container">
+    <div class="col-4"></div>
+
+    <div class="container-fluid cbg-white p-3 col-4">
+        <center>
+            <h4>Create a Linked User</h4>
+            <form action="#" method="post">
+                {% csrf_token %}
+                {{ registerForm.as_p }}
+                <input type="submit" value="Add">
+            </form>
+        </center>
+
+        <div class="mt-4">
+            <center>
+                <list>
+                {% for user in linkedUsers%}
+                    {% if user.2 %}
+                        <ul> {{user.1}} (self) <a href='/account/{{user.0}}'>edit</a></ul>
+                    {% else %}
+                        <ul> {{user.1}} <a href='/account/{{user.0}}'>edit</a> <a href='/deletepart/{{user.0}}'>delete</a></ul>
+                    {% endif %}
+                {% endfor%}
+                </list>
+            </center>
+        </div>
+
+        <div class="my-3">
+            <center>
+                <a class="btn btn-sm btn-secondary" href="#" role="button">Change Password</a>
+            </center>
+        </div>
+        <div class="my-3">
+            <center>
+                <a class="btn btn-sm btn-secondary" href="#" role="button">Delete Account</a>
+            </center>
+        </div>
+    </div>
+
+    <div class="col-4"></div>
+</div>
+{% endblock %}

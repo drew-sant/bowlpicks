@@ -1,0 +1,54 @@
+/* CUSTOM COLORS */
+
+/*  */
+.cbg-dark-grey{
+    background-color: #5a5a5a;
+}
+
+.cbg-light-grey{
+    background-color: #eeeeee;
+}
+
+.cbg-white{
+    background-color: #ffffff;
+}
+
+.cbg-pseudo-white{
+    background-color: #f7f7f7;
+}
+
+.cbg-grey-white{
+    background-color: #fafafa;
+}
+
+/* TEXT */
+.ctext-dark-grey{
+    color: #5a5a5a;
+}
+
+.ctext-light-grey{
+    color: #eeeeee;
+}
+
+.ctext-white{
+    color: #ffffff;
+}
+
+.ctext-pseudo-white{
+    color: #f7f7f7;
+}
+
+.ctext-grey-white{
+    color: #fafafa;
+}
+
+ 
+.hscroll{
+    overflow-x: auto;
+    white-space: nowrap;
+}
+  
+.horizontal-scrollable > .row > .col-1 {
+    display: inline-block;
+    float: none;
+}

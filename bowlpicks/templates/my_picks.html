@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+Picks
+{% endblock %}
+
+{% block contentTitle %}
+My Picks - {{ selected.1 }} <h5><a href="edit">edit</a></h5>
+{% endblock %}
+
+{% block content %}
+<div class="table-responsive cbg-white container rounded">
+        <nav class="navbar navbar-expand-sm navbar-light bg-faded">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav-conten" aria-controls="nav-conten" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+    <div class="collapse navbar-collapse" id="nav-conten">
+        <ul class="navbar-nav">
+            {% for uindex, luser in  linked_users %}
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-picks/{{uindex}}">{{luser}}</a>
+                </li>
+            {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+    <table class="table table-striped rounded mt-3">
+        <tbody>
+            {% if not picks %}
+            <p>No picks found</p>
+            {% endif %}
+            {% for pick in picks%}
+                <tr>
+                    <th scope="row">{{pick.1}}</th>
+                    <th>{{pick.2}}</th>
+                    <th><a href="/edit-picks/{{selected.0}}/{{pick.0}}">Edit Pick</a></th>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
