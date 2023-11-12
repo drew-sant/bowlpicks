@@ -1,38 +1,35 @@
 ## Bowl Picks
 A small personal project to practice my Django skills and knowlegde.
 
+Bowlpicks is a small web app created with the
+[Django](https://www.djangoproject.com/) web framework.
+
 This web app is made to help facilitate collecting and sharing college
 football bowl picks in a group of people.
 
 # Setup
 
+### My Development Environment
+
+I am using Visual Studio Code IDE, git and Github for version control,
+OS is Ubuntu 22 LTS and Python 3.11.12. I am using venv and all needed
+packages are listed in the requirments.txt
+
+### Production Environment
+
+I am hosting the app on DigitalOcean's App Platform. They make it easy and they have this
+[guide](https://docs.digitalocean.com/developer-center/deploy-a-django-app-on-app-platform/)
+that walks you through the setup.
+
 ### Setting's File
-There are two settings files for the Django project. One for dev and the other for production.
-The production one is the default and the dev one needs to activated using the prefix of:
+When your desiring the development settings, set an evironment variable called ```DEVELOPMENT_MODE```
+to True or append it to you command like this:
 
 ```
-DJANGO_DEV=true
+DEVELOPMENT_MODE=True python manage.py runserver
 ```
 
-The full line with runserver would be:
-
-```
-DJANGO_DEV=true python manage.py runserver
-```
-
-The production settings is included in this repository because I didn't include any sensitive
-informantion.
-
-I have this at the bottom of bowlpicks/settings.py:
-
-```
-if os.getenv('DJANGO_DEV') == 'true':
-    from settings_dev import *
-```
-
-This will override the variables from the production settings file with the specified variable in the
-settings_dev file. I got this idea from this [form](https://stackoverflow.com/questions/10664244/django-how-to-manage-development-and-production-settings). It has a few other solutions for keeping dev
-and production settings seperate if your interested.
+If settings.py doesn't find this environment variable then the default value is False.
 
 # Resources
 * [Django Setup](https://medium.com/@sjhomem/creating-a-django-project-base-template-f5bab9f2114c)

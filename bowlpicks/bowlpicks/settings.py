@@ -1,5 +1,5 @@
 """
-Django settings for bowlpicks project for production.
+Django settings for bowlpicks project for production and dev.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/4.2/topics/settings/
@@ -22,11 +22,11 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# Will generate a new security key if the DJANGO_SECRET_KEY
+# Will generate a new security key if the DJANGO_SECRET_KEY isn't found.
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
@@ -60,7 +60,6 @@ ROOT_URLCONF = 'bowlpicks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # 'DIRS': [BASE_DIR.joinpath('/templates/'),],
         'DIRS': ['../bowlpicks/templates/',],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -139,9 +138,13 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'my-picks'
 
 
-# As mentioned in the README
-# if os.getenv('DEVELOPMENT_MODE')==True:
-#     from bowlpicks.settings_dev import *
+# It will force the user to login again when the key changes so in dev mode we will use the one in file.
+if DEVELOPMENT_MODE == "True":
+    try:
+        import mysecrets
+        SECRET_KEY = mysecrets.dev_key
+    except Exception as e:
+        print("DEV_MODE: mysecrets.py not found")
