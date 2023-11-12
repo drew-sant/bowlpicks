@@ -8,7 +8,7 @@ football bowl picks in a group of people.
 
 ### Setting's File
 There are two settings files for the Django project. One for dev and the other for production.
-The production one is the default and the dev one needs to activated useing the prefix of:
+The production one is the default and the dev one needs to activated using the prefix of:
 
 ```
 DJANGO_DEV=true
@@ -20,12 +20,10 @@ The full line with runserver would be:
 DJANGO_DEV=true python manage.py runserver
 ```
 
-The production settings is gitignored in this repository and you will need to create it yourself.
-There are a few tutorials about doing so. The Django Project has this article that talks about
-preparing the settings file for productin.
+The production settings is included in this repository because I didn't include any sensitive
+informantion.
 
-But to get it to work how I set it up, you will add the following to the end of you production
-settings file that you create:
+I have this at the bottom of bowlpicks/settings.py:
 
 ```
 if os.getenv('DJANGO_DEV') == 'true':

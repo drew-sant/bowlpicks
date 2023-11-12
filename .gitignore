@@ -30,5 +30,3 @@ venv/
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
-
-settings.py
