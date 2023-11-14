@@ -17,7 +17,7 @@ class Game(models.Model):
     date = models.DateField()
 
     def __str__(self):
-        return f'{self.bowl}: {self.team1} vs {self.team2} @ {self.datetime}'
+        return f'{self.bowl}: {self.team1} vs {self.team2} @ {self.date}'
 
 class Participant(models.Model):
     name = models.CharField(max_length=30)
@@ -50,7 +50,7 @@ class Pick(models.Model):
 
     def __str__(self):
         loser = self.get_loser()
-        if self.winner or self.winby == None:
+        if self.winner == None or self.winby == None:
             return f'{self.id} {self.game.bowl}: {self.owner.name} has not made a pick yet.'
         else:
             return f'{self.id} {self.game.bowl}: {self.owner.name} picks {self.winner.name} beats {loser.name} by {self.winby}'

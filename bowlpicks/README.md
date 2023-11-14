@@ -31,6 +31,16 @@ DEVELOPMENT_MODE=True python manage.py runserver
 
 If settings.py doesn't find this environment variable then the default value is False.
 
+# Tests
+
+All tests are in the picks/test/ directory.
+
+Run tests (in dev environment) using:
+
+```
+DEVELOPMENT_MODE=True python3 manage.py test
+```
+
 # Resources
 * [Django Setup](https://medium.com/@sjhomem/creating-a-django-project-base-template-f5bab9f2114c)
 * [Django Setup - Structure Files](https://studygyaan.com/django/best-practice-to-structure-django-project-directories-and-files#:~:text=The%20way%20I%20like%20to,content%20in%20the%20media%20folder)
@@ -40,3 +50,4 @@ If settings.py doesn't find this environment variable then the default value is 
 * [Add Bootstrap to Django](https://www.w3schools.com/django/django_add_bootstrap5.php)
 * [Bootstrap Navbar](https://www.quackit.com/bootstrap/bootstrap_5/tutorial/bootstrap_navbars.cfm)
 * [CSS Layouts](https://developer.mozilla.org/en-US/docs/Learn/CSS/CSS_layout)
+* [Testing in Django - Mozilla](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Testing#other_recommended_test_tools)
