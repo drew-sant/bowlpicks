@@ -28,6 +28,34 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
+# Add to Django's logging
+# Added a rotating log file for the logger in picks.views with default level:INFO
+# Set level via environmental var: DJANGO_LOG_LEVEL
+LOGGING = {
+    "version": 1,
+    "disable_exisiting_loggers": False,
+    "formatters":{
+        "my_verbose":{
+            "format": '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        }
+    },
+    "handlers":{
+        "file":{
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": "logging_rotatingfile.log",
+            "maxBytes": 15728640, #15MB
+            "backupCount": 10,
+            "formatter": "my_verbose",
+        }
+    },
+    "loggers": {
+        "picks.views":{
+            "handlers": ['file'],
+            "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        }
+    }
+}
+
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 

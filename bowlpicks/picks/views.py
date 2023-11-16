@@ -19,7 +19,6 @@ from .forms import AddParticipantForm
 from django.db.models import Min
 
 import logging
-# Using Django's logger.
 logging = logging.getLogger(__name__)
 
 
@@ -66,20 +65,24 @@ def account(request, userid=None):
             # If no userid then create new participant
             new_participant = Participant(name=form.cleaned_data["name"].capitalize(), user=request.user, is_self=False)
             new_participant.save()
+            logging.info(f'PARTICIPANT CREATED: participant: "{new_participant.name}" was created by user: "{request.user.username}" is_self={new_participant.is_self}')
 
             # Create pick for every game for the new user.
             query_games = Game.objects.all()
             for g in query_games:
                 new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
                 new_pick.save()
+                logging.info(f'PICK CREATED: pick:"{str(new_pick)}" was automantically created for participant: "{new_participant.name}"')
 
             return HttpResponseRedirect("")
         
         if form.is_valid() and userid != None:
             # If recived a user id then we will change an existing user.
             existing_participant = Participant.objects.get(id=userid)
+            old_name = existing_participant.name # for logging purposes
             existing_participant.name = form.cleaned_data["name"]
             existing_participant.save()
+            logging.info(f'PARTICIPANT EDITED: participant: "{old_name}" was changed to {existing_participant.name} by user: {request.user.username}')
             return HttpResponseRedirect("")
     else:
         form = AddParticipantForm(instance=Participant.objects.get(id=userid)) if userid != None else AddParticipantForm()
@@ -88,6 +91,7 @@ def account(request, userid=None):
 
 
 def check_admin(user):
+   """A test for view permission."""
    return user.is_superuser
 
 @user_passes_test(check_admin)
@@ -99,8 +103,10 @@ def adminPage(request):
 @login_required
 def groupPicks(request, layout='users', userorgame=None):
     if userorgame == None and layout == 'users':
+        # Default to the signedin user's participant self.
         userorgame = Participant.objects.filter(user=request.user).get(is_self=True)
     elif userorgame == None and layout == 'games':
+        # Default to the minimum id in Game
         userorgame = Game.objects.aggregate(id=Min("id"))['id']
     
     user_query = Participant.objects.all()
@@ -128,10 +134,6 @@ def groupPicks(request, layout='users', userorgame=None):
             d['loser'] = pick.get_loser()
             games[pick.owner.name] = d
 
-
-    # users = [(0, "Andrew"), (1, "Bracken"), (2, "William"), (3, "Jake"), (4, "Dallin"), (5,"katelyn"), (6, "Celeste")]
-    # bowls = [(0,"Cotton Bowl"), (1,"Orange Bowl"), (2,"Fiesta Bowl"), (3,"Rose Bowl"), (4,"Alamo Bowl")]
-
     return render(request, 'group_picks.html', {
         "users": users,
         "games": games,
@@ -143,12 +145,14 @@ def groupPicks(request, layout='users', userorgame=None):
 
 
 def login(request):
+    # Django's built-in login
     return render(request, 'registration/login.html')
 
 
 @login_required
 def myPicks(request, user=None):
     if user == None:
+        # If not given a user id then we use the signed in user's participant self.
         user = Participant.objects.filter(user=request.user).get(is_self=True).id
     query = Participant.objects.filter(user=request.user)
     linked_users = [(x.id, x.name) for x in query]
@@ -184,15 +188,18 @@ def register(request):
                 user = User.objects.create_user(form.cleaned_data['username'])
                 user.set_password(form.cleaned_data['password'])
                 user.save()
+                logging.info(f'USER CREATED: user: "{user.username}" was created.')
                 # Create a new participant associated with the new user's self.
                 new_participant = Participant(name=form.cleaned_data['username'].capitalize(), user=user, is_self=True)
                 new_participant.save()
+                logging.info(f'PARTICIPANT CREATED: Participant: "{new_participant.name}" was created automatically for "{user.username}" and is_self=True')
 
                 # Create pick for every game for the new participant.
                 query_games = Game.objects.all()
                 for g in query_games:
                     new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
                     new_pick.save()
+                    logging.info(f'PICK CREATED: Pick: "{str(new_pick)}" was created automatically when participant: "{new_participant.name}" was created.')
 
                 return HttpResponseRedirect("login")
     else:
@@ -214,12 +221,14 @@ def setup(request, gameid=None):
             data = form.cleaned_data
             new_game = Game(bowl=data["bowl"], team1=data["team1"], team2=data["team2"], date=data["date"])
             new_game.save()
+            logging.info(f'GAME CREATED: game: "{str(new_game)}" was created by user: "{request.user.username}"')
 
             # Create a pick for each existing user for this game.
             query_participants = Participant.objects.all()
             for p in query_participants:
                 new_pick = Pick(game=new_game, winner=None, winby=None, owner=p)
                 new_pick.save()
+                logging.info(f'PICK CREATED: pick: "{str(new_pick)}" was automatically created for game: "{new_game.bowl}"')
 
             return HttpResponseRedirect("")
         
@@ -261,7 +270,7 @@ def addTeam(request, teamid=None):
             old_name = existing_team.name # logging purposes
             existing_team.name = form.cleaned_data["name"]
             existing_team.save()
-            logging.info(f'TEAM EDITED: {request.user.username} edited an existing team 
+            logging.info(f'TEAM EDITED: {request.user.username} edited an existing team \
                          from "{old_name}" to "{existing_team.name}"')
             return HttpResponseRedirect("")
     else:
