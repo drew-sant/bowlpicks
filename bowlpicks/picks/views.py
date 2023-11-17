@@ -37,7 +37,8 @@ def editPicks(request, userid, pickid):
         if form.is_valid():
             if Participant.objects.get(id=userid).user == request.user:
                 # Edit the pick if the participant belongs to current user.
-                existing_pick.winner = Team.objects.get(id=form.cleaned_data["winner"][0])
+                logging.debug(f'editPicks: Selected winner\'s id from EditPicksForm: {form.cleaned_data["winner"]}')
+                existing_pick.winner = Team.objects.get(id=form.cleaned_data["winner"])
                 existing_pick.winby = form.cleaned_data["winby"]
                 existing_pick.save()
                 logging.info(f'EDIT PICK: {request.user.username} edited pick to: {existing_pick}')

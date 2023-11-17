@@ -10,11 +10,11 @@ USER's Picks
 
 {% block content %}
     <div class="row container-fluid cbg-white">
-        <div class="col-4 p-3">
+        <div class="col-0 col-lg-4 p-3 d-none d-lg-block">
             <center>TEAM1 Stats</center>
         </div>
 
-        <div class="p-4 col-4 "> <!-- row position-absolute top-0 start-50 translate-middle-x -->
+        <div class="p-4 col-lg-4 col-12 ">
             <center>
                 <form action="#" method="post">
                     {% csrf_token %}
@@ -24,7 +24,7 @@ USER's Picks
             </center>
         </div>
 
-        <div class="col-4 p-3">
+        <div class="col-0 p-3 col-lg-4 d-none d-lg-block">
             <center>TEAM2 Stats</center>
         </div>
     </div>

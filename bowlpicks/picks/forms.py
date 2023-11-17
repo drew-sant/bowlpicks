@@ -7,19 +7,12 @@ from picks.models import Pick
 
 class EditPicksForm(forms.Form):
     winner = forms.ChoiceField(label="Winner", choices =[('1', 'Option 1'), ('2', 'Option 2')])
-    winby = forms.IntegerField(label="Win By", max_value = 50)
+    winby = forms.IntegerField(label="Win By", max_value = 50, widget=forms.NumberInput(attrs={"size":10}))
 
     def __init__(self, pickid, *args, **kwargs):
         super(EditPicksForm, self).__init__(*args, **kwargs)
         game = Pick.objects.get(id=pickid).game
         self.fields['winner'].choices = [(game.team1.id, game.team1.name),(game.team2.id, game.team2.name)]
-
-
-# class EditPicksForm(forms.ModelForm):
-#     class Meta:
-#         model = Pick
-#         fields = ("winner","winby")
-
 
 class AddGameForm(forms.ModelForm):
     class Meta:
