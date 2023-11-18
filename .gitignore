@@ -32,3 +32,6 @@ venv/
 .history
 
 mysecrets.py
+
+# A script that I made to list todos
+pytodo.py

@@ -614,3 +614,8 @@ class AdminPageViewTest(TestCase):
         response = self.client.get(reverse('adminPage'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin_page.html')
+
+class MyParticipantsTest(TestCase):
+    def setUp(self):
+        pass
+    # TODO Write tests for myParticipants view.

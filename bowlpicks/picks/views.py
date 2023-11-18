@@ -315,3 +315,8 @@ def deleteParticipant(request, userid):
         return HttpResponseRedirect("/account")
     else:
         return HttpResponse("FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
+
+@login_required
+def myParticipants(request, paricipantid):
+    # TODO Migrate code from account to here for participant managment.
+    pass

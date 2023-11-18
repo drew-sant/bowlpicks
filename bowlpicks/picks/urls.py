@@ -24,4 +24,5 @@ urlpatterns = [
     path("deleteteam/<int:teamid>", views.deleteTeam, name="delete_team"),
     path("addteam", views.addTeam, name="addteam"),
     path("addteam/<int:teamid>", views.addTeam, name="addteamid"),
+    # TODO Add two urls for myParticipants view
 ]
