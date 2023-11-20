@@ -32,3 +32,6 @@ venv/
 .history
 
 mysecrets.py
+
+# Script that I made to find todo's
+pytodo.py

@@ -31,6 +31,17 @@ DEVELOPMENT_MODE=True python manage.py runserver
 
 If settings.py doesn't find this environment variable then the default value is False.
 
+# mysecrets.py File
+mysecrets.py is a file that is gitignored and so this is what it contains so you don't
+have to hunt down any errors you would get.
+
+DEV_KEY - a django secret key that I use for development. It doesn't really need to be secret and
+you really don't need it because the key will just be auto generated. I have it just because I don't
+want users signed out each time I reload my app as I make changes.
+
+CFBD_KEY - An API key for [collegefootballdata.com's](collegefootballdata.com) API. You can get yours
+for free [here](https://collegefootballdata.com/key).
+
 # Tests
 
 All tests are in the picks/test/ directory.

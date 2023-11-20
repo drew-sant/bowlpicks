@@ -15,6 +15,8 @@ class Game(models.Model):
     team1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team1")
     team2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team2")
     date = models.DateField()
+    team1_score = models.PositiveBigIntegerField("Team 1 Score", null=True)
+    team2_score = models.PositiveBigIntegerField("Team 2 Score", null=True)
 
     def __str__(self):
         return f'{self.bowl}: {self.team1} vs {self.team2} @ {self.date}'
