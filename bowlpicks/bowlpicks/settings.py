@@ -52,8 +52,12 @@ LOGGING = {
         "picks.views":{
             "handlers": ['file'],
             "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
-        }
-    }
+        },
+        "picks.logic":{
+            "handlers": ['file'],
+            "level": os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+    },
 }
 
 
