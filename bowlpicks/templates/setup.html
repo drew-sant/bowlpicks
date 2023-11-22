@@ -18,7 +18,9 @@ Setup
 <div class="pt-5">
     <list>
     {% for game in games %}
-            <ul> {{ game.1 }} <a href="/setup/{{game.0}}">edit</a> <a href="/deletegame/{{game.0}}">delete</a></ul>
+            <ul> {{ game.1 }} <a href="/setup/{{game.0}}">edit</a> <a href="/deletegame/{{game.0}}">delete</a>
+                <a href="/addscore/{{game.0}}">score</a>
+            </ul>
     {% endfor %}
     </list>
 </div>

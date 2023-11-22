@@ -15,6 +15,7 @@ from .forms import AddGameForm
 from .forms import RegisterUserForm
 from .forms import AddTeamForm
 from .forms import AddParticipantForm
+from .forms import AddScoreForm
 
 from django.db.models import Min
 
@@ -212,7 +213,7 @@ def register(request):
 def setup(request, gameid=None):
     query_game = Game.objects.all()
     # Create a list of tuples of the form (<gameid>, <text-to-display-in-list>)
-    games_list = [(x.id, f'{x.bowl} - {x.team1} vs {x.team2} - {x.date}') for x in query_game]
+    games_list = [(x.id, f'{x.bowl} - {x.team1} vs {x.team2} - {x.date} {x.team1_score, x.team2_score}') for x in query_game]
     
     if request.method == "POST":
         form = AddGameForm(request.POST)
@@ -281,6 +282,30 @@ def addTeam(request, teamid=None):
     return render(request, 'add_team.html', {"form": form, "teams": teams})
 
 @user_passes_test(check_admin)
+def addScore(request, gameid):
+    if request.method == "POST":
+        form = AddScoreForm(request.POST)
+        if form.is_valid() and gameid != None:
+            # If given a team id then we edit the team name.
+            game = Game.objects.get(id=gameid)
+            old_t1_score = game.team1_score # logging purposes
+            old_t2_score = game.team2_score # logging purposes
+            game.team1_score = form.cleaned_data["team1_score"]
+            game.team2_score = form.cleaned_data["team2_score"]
+            game.save()
+            logging.info(f'GAME SCORE EDITED: {request.user.username} edited an existing team \
+                         from team1"{old_t1_score}" team2"{old_t2_score}" to team1"{game.team1_score}" team2"{game.team2_score}"')
+            return HttpResponseRedirect("/setup")
+    else:
+        # If we don't get data via POST then we create our own form.
+        # Populate the form with the team info if provided a team id and blank if we don't.
+        form = AddScoreForm(instance=Game.objects.get(id=gameid)) if gameid != None else AddScoreForm()
+
+    return render(request, 'add_score.html', {"form": form, "gameid": gameid})
+
+
+
+@user_passes_test(check_admin)
 def deleteGame(request, gameid):
     """Delete the game associated with gameid."""
     game = Game.objects.get(id=gameid)
@@ -295,6 +320,16 @@ def deleteTeam(request, teamid):
     team.delete()
     logging.info(f'TEAM DELETED: {request.user.username} deleted {team.name}')
     return HttpResponseRedirect("/addteam")
+
+@user_passes_test(check_admin)
+def deleteScore(request, gameid):
+    """Set the score to None of the game associated with gameid."""
+    game = Game.objects.get(id=gameid)
+    game.team1_score = None
+    game.team2_score = None
+    game.save()
+    logging.info(f'SCORE DELETED: {request.user.username} deleted {str(game)}')
+    return HttpResponseRedirect("/setup")
 
 @login_required
 def logout_view(request):

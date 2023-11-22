@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 import datetime
 
-from picks.forms import EditPicksForm, AddGameForm, AddTeamForm, RegisterUserForm, AddParticipantForm
+from picks.forms import EditPicksForm, AddGameForm, AddTeamForm, RegisterUserForm, AddParticipantForm, AddScoreForm
 from picks.models import Team, Game, Participant, Pick
 from django.contrib.auth.models import User
 
@@ -58,3 +58,9 @@ class AddParticipantFormTest(TestCase):
     def test_field_label(self):
         form = AddParticipantForm()
         self.assertTrue(form.fields['name'].label is None or form.fields['name'].label == 'Name')
+
+class AddScoreFormTest(TestCase):
+    def test_field_label(self):
+        form = AddScoreForm()
+        self.assertTrue(form.fields['team1_score'].label is None or form.fields['team1_score'].label == 'Team 1 Score')
+        self.assertTrue(form.fields['team2_score'].label is None or form.fields['team2_score'].label == 'Team 2 Score')

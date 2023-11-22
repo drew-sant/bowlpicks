@@ -41,3 +41,8 @@ class AddParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
         fields = ("name",)
+
+class AddScoreForm(forms.ModelForm):
+    class Meta:
+        model = Game
+        fields = ("team1_score", "team2_score")

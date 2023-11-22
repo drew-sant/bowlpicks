@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from picks.models import Pick, Game, Team, Participant
-from picks.forms import EditPicksForm, AddParticipantForm, RegisterUserForm, AddGameForm, AddTeamForm
+from picks.forms import EditPicksForm, AddParticipantForm, RegisterUserForm, AddGameForm, AddTeamForm, AddScoreForm
 
 class EditPicksViewTest(TestCase):
     """Tests for edit picks view
@@ -614,3 +614,88 @@ class AdminPageViewTest(TestCase):
         response = self.client.get(reverse('adminPage'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'admin_page.html')
+
+class addScoringViewTest(TestCase):
+    def setUp(self):
+        # Create users
+        User.objects.create_user(username='user', password = 'nachocheese')
+        User.objects.create_superuser(username='admin', password = 'nachocheese')
+        # Create teams
+        team1 = Team.objects.create(name='team1')
+        team2 = Team.objects.create(name='team2')
+        # Create game
+        Game.objects.create(bowl='game1', team1=team1, team2=team2, date='2023-12-26')
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(username='admin', password='nachocheese')
+        response = self.client.get('/addscore/1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_not_logged_in(self):
+        response = self.client.get('/addscore/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/addscore/1')
+    
+    def test_view_not_admin(self):
+        self.client.login(username='user', password='nachocheese')
+        response = self.client.get('/addscore/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/addscore/1')
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(username='admin', password='nachocheese')
+        response = self.client.get(reverse('addscore', kwargs={'gameid': 1}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        self.client.login(username='admin', password='nachocheese')
+        response = self.client.get(reverse('addscore', kwargs={'gameid': 1}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'add_score.html')
+    
+    def test_view_has_form(self):
+        login = self.client.login(username='admin', password='nachocheese')
+        response = self.client.get('/addscore/1')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context['form'], AddScoreForm)
+    
+    def test_view_has_gameid(self):
+        login = self.client.login(username='admin', password='nachocheese')
+        response = self.client.get('/addscore/1')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context['gameid'], int)
+
+
+class DeleteScoreViewTest(TestCase):
+    def setUp(self):
+        # Create users
+        User.objects.create_user(username='user', password = 'nachocheese')
+        User.objects.create_superuser(username='admin', password = 'nachocheese')
+        # Create teams
+        team1 = Team.objects.create(name='team1')
+        team2 = Team.objects.create(name='team2')
+        # Create game
+        Game.objects.create(bowl='game1', team1=team1, team2=team2, date='2023-12-26', team1_score=7, team2_score=21)
+
+    def test_view_url_exists_at_desired_location(self):
+        login = self.client.login(username='admin', password='nachocheese')
+        response = self.client.get('/deletescore/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/setup')
+    
+    def test_view_logged_out(self):
+        response = self.client.get('/deletescore/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/deletescore/1')
+    
+    def test_view_user_is_not_admin(self):
+        login = self.client.login(username='user', password='nachocheese')
+        response = self.client.get('/deletescore/1')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/deletescore/1')
+
+    def test_view_url_accessible_by_name(self):
+        login = self.client.login(username='admin', password='nachocheese')
+        response = self.client.get(reverse('delete_score', kwargs={'gameid': 1}))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/setup')
