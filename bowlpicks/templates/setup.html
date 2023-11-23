@@ -10,11 +10,13 @@ Setup
 
 {% block content %}
 <center>
+    <!--Form for adding a game-->
     <form action="#" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Save">
     </form>
+
 <div class="pt-5">
     <list>
     {% for game in games %}
@@ -25,9 +27,11 @@ Setup
     </list>
 </div>
 
-<div class="pt-5">
-    <a href="/admin">Admin Site</a><br>
-    <a href="/addteam">Add Team</a>
+    <!--Some links for admin-->
+    <div class="pt-5">
+        <a href="/admin">Admin Site</a><br>
+        <a href="/addteam">Add Team</a>
+    </div>
 
 </center>
 {% endblock %}

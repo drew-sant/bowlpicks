@@ -38,7 +38,8 @@ def editPicks(request, userid, pickid):
         if form.is_valid():
             if Participant.objects.get(id=userid).user == request.user:
                 # Edit the pick if the participant belongs to current user.
-                existing_pick.winner = Team.objects.get(id=form.cleaned_data["winner"][0])
+                logging.debug(f'editPicks: Selected winner\'s id from EditPicksForm: {form.cleaned_data["winner"]}')
+                existing_pick.winner = Team.objects.get(id=form.cleaned_data["winner"])
                 existing_pick.winby = form.cleaned_data["winby"]
                 existing_pick.save()
                 logging.info(f'EDIT PICK: {request.user.username} edited pick to: {existing_pick}')
@@ -349,3 +350,8 @@ def deleteParticipant(request, userid):
         return HttpResponseRedirect("/account")
     else:
         return HttpResponse("FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
+
+@login_required
+def myParticipants(request, paricipantid):
+    # TODO Migrate code from account to here for participant managment.
+    pass

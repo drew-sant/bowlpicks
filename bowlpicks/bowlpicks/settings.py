@@ -170,7 +170,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
-LOGIN_REDIRECT_URL = 'my-picks'
+LOGIN_REDIRECT_URL = '/my-picks'
 
 
 # It will force the user to login again when the key changes so in dev mode we will use the one in file.

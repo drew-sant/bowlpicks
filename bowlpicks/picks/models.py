@@ -6,6 +6,7 @@ class Team(models.Model):
     """Model representing a team. Just a name for now"""
     name = models.CharField(max_length=30)
     # TODO add constraint on name being unique
+    # TODO Add seed value
 
     def __str__(self):
         return self.name

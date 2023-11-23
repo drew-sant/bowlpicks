@@ -699,3 +699,8 @@ class DeleteScoreViewTest(TestCase):
         response = self.client.get(reverse('delete_score', kwargs={'gameid': 1}))
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/setup')
+
+class MyParticipantsTest(TestCase):
+    def setUp(self):
+        pass
+    # TODO Write tests for myParticipants view.

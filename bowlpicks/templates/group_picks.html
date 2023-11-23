@@ -10,6 +10,7 @@ Group Picks
 
 {% block content %}
 
+    <!--Buttons for layout options-->
     {% if layout == "users" %}
         <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
           <a href='/group-picks/users'> <label class="btn btn-secondary active">
@@ -30,42 +31,47 @@ Group Picks
         </div>
     {% endif %}
 
-<div class="">
-    <div class="pb-2 flex-nowrap overflow-scroll row container rounded responsive">
-        {% if layout == "users" %}
-            {% for name in users %}
-                <div class="col"><a href="/group-picks/users/{{name.0}}">{{name.1}}</a></div>
-            {% endfor %}
-        {% else %}
-        {% for game in bowls %}
-                <div class="col"><a href="/group-picks/games/{{game.0}}">{{game.1}}</a></div>
-            {% endfor %}
-        {% endif %}
+    <!--A collapsable list of either games or participants (depending on selected layout)-->
+    <nav class="navbar navbar-expand-sm navbar-light bg-faded">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#participants_list" aria-controls="participants_list" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="participants_list">
+            <ul class="navbar-nav">
+                {% if layout == "users" %}
+                    {% for name in users %}
+                        <li class="nav-item"><a class="nav-link" href="/group-picks/users/{{name.0}}">{{name.1}}</a></li>
+                    {% endfor %}
+                {% else %}
+                    {% for game in bowls %}
+                        <li class="nav-item"><a class="nav-link" href="/group-picks/games/{{game.0}}">{{game.1}}</a></li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!--The table containing the picks-->
+    <div class="table-responsive cbg-white container rounded">
+        <table class="table table-striped rounded mt-3">
+            <tbody>
+                {% if layout == "users"%}
+                    {% for game, pick in picks.items %}
+                    <tr>
+                        <th scope="row">{{game}}</th>
+                        <th>{{pick.winner}} beats {{pick.loser}} by {{pick.winby}}</th>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    {% for user, pick in games.items %}
+                    <tr>
+                        <th scope="row">{{user}}</th>
+                        <th>{{pick.winner}} beats {{pick.loser}} by {{pick.winby}}</th>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
     </div>
-</div>
-
-<div class="table-responsive cbg-white container rounded">
-    <table class="table table-striped rounded mt-3">
-        <tbody>
-            
-            {% if layout == "users"%}
-                {% for game, pick in picks.items %}
-                <tr>
-                    <th scope="row">{{game}}</th>
-                    <th>{{pick.winner}} beats {{pick.loser}} by {{pick.winby}}</th>
-                </tr>
-                {% endfor %}
-
-            {% else %}
-                {% for user, pick in games.items %}
-                <tr>
-                    <th scope="row">{{user}}</th>
-                    <th>{{pick.winner}} beats {{pick.loser}} by {{pick.winby}}</th>
-                </tr>
-                {% endfor %}
-            {% endif %}
-
-        </tbody>
-    </table>
-</div>
+    
 {% endblock %}
