@@ -36,16 +36,16 @@
             <a class="nav-link" href="/group-picks">Group Picks</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/account">Account</a>
+            <a class="nav-link" href="/my-participants">My Participants</a>
           </li>
           {% if user.is_superuser %}
           <li class="nav-item">
             <a class="nav-link" href="/setup">Setup</a>
           </li>
           {% endif %}
-          {% if user.is_authenticated %}
+          {% if not user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="/logout">Logout</a>
+            <a class="nav-link" href="/login">Login</a>
           </li>
           {% endif %}
         </ul>

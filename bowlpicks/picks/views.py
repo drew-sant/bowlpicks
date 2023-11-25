@@ -56,13 +56,17 @@ def editPicks(request, userid, pickid):
 
 
 @login_required
-def account(request, userid=None):
+def account(request):
+    return render(request, 'account.html')
+
+@login_required
+def myParticipants(request, participantid=None):
     query = Participant.objects.filter(user=request.user)
-    linked_users = [(x.id, x.name, x.is_self) for x in query]
+    participants = [(x.id, x.name, x.is_self) for x in query]
 
     if request.method == "POST":
         form = AddParticipantForm(request.POST)
-        if form.is_valid() and userid==None:
+        if form.is_valid() and participantid==None:
             # If no userid then create new participant
             new_participant = Participant(name=form.cleaned_data["name"].capitalize(), user=request.user, is_self=False)
             new_participant.save()
@@ -77,17 +81,17 @@ def account(request, userid=None):
 
             return HttpResponseRedirect("")
         
-        if form.is_valid() and userid != None:
-            # If recived a user id then we will change an existing user.
-            existing_participant = Participant.objects.get(id=userid)
+        if form.is_valid() and participantid != None:
+            # If received a user id then we will change an existing user.
+            existing_participant = Participant.objects.get(id=participantid)
             old_name = existing_participant.name # for logging purposes
             existing_participant.name = form.cleaned_data["name"]
             existing_participant.save()
             logging.info(f'PARTICIPANT EDITED: participant: "{old_name}" was changed to {existing_participant.name} by user: {request.user.username}')
             return HttpResponseRedirect("")
     else:
-        form = AddParticipantForm(instance=Participant.objects.get(id=userid)) if userid != None else AddParticipantForm()
-    return render(request, 'account.html', {"registerForm": form, 'linkedUsers': linked_users})
+        form = AddParticipantForm(instance=Participant.objects.get(id=participantid)) if participantid != None else AddParticipantForm()
+    return render(request, 'my_participants.html', {"participantForm": form, 'usersParticipants': participants})
 
 
 
@@ -312,11 +316,6 @@ def deleteParticipant(request, userid):
         # AND the participant isn't the user's own self will it be allowed deletion.
         participant.delete()
         logging.info(f'PARTICIPANT DELETED: {request.user.username} deleted {participant.name}')
-        return HttpResponseRedirect("/account")
+        return HttpResponseRedirect("/my-participants")
     else:
         return HttpResponse("FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
-
-@login_required
-def myParticipants(request, paricipantid):
-    # TODO Migrate code from account to here for participant managment.
-    pass
