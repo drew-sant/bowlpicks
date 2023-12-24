@@ -37,9 +37,13 @@ def index(request):
 
 @login_required
 def editPicks(request, userid, pickid):
-    deadline = Deadlines.objects.get(verbose_name='all picks').date
-    if deadline <= date.today():
+    try:
+        is_passed_deadline = Deadlines.objects.get(verbose_name='all picks').date <= date.today()
+    except:
+        is_passed_deadline = False
+    if is_passed_deadline:
         return HttpResponse('FAILED: The date has already passed to edit this pick. <a href="/group-picks">back</a>')
+    
     existing_pick = Pick.objects.get(id=pickid)
     if request.method == "POST":
         # If we get data from request then create form with it.
@@ -187,7 +191,11 @@ def login(request):
 
 @login_required
 def myPicks(request, user=None):
-    is_passed_deadline = True if Deadlines.objects.get(verbose_name='all picks').date <= date.today() else False
+    try:
+        is_passed_deadline = True if Deadlines.objects.get(verbose_name='all picks').date <= date.today() else False
+    except:
+        is_passed_deadline = False
+
     if user == None:
         # If not given a user id then we use the signed in user's participant self.
         user = Participant.objects.filter(user=request.user).get(is_self=True).id
