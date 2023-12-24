@@ -23,7 +23,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Will generate a new security key if the DJANGO_SECRET_KEY isn't found.
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+# It will force the user to login again when the key changes so in dev mode we will use the one in file.
+if DEVELOPMENT_MODE == "True":
+    try:
+        import mysecrets
+        SECRET_KEY = mysecrets.dev_key
+    except Exception as e:
+        print("DEV_MODE: mysecrets.py not found")
+else:
+    SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
@@ -173,10 +181,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/my-picks'
 
 
-# It will force the user to login again when the key changes so in dev mode we will use the one in file.
-if DEVELOPMENT_MODE == "True":
-    try:
-        import mysecrets
-        SECRET_KEY = mysecrets.dev_key
-    except Exception as e:
-        print("DEV_MODE: mysecrets.py not found")

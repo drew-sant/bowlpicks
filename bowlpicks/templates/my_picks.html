@@ -37,7 +37,9 @@ My Picks - {{ selected.1 }} <!--<h5><a href="edit">edit</a></h5> Have this link 
                     <tr>
                         <th scope="row">{{pick.1}}</th>
                         <th>{{pick.2}}</th>
-                        <th><a href="/edit-picks/{{selected.0}}/{{pick.0}}">Edit Pick</a></th>
+                        {% if not is_passed_deadline %}
+                            <th><a href="/edit-picks/{{selected.0}}/{{pick.0}}">Edit Pick</a></th>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

@@ -42,6 +42,10 @@ want users signed out each time I reload my app as I make changes.
 CFBD_KEY - An API key for [collegefootballdata.com's](collegefootballdata.com) API. You can get yours
 for free [here](https://collegefootballdata.com/key).
 
+<!-- TODO: Add details-->
+# Deadlines
+Need to set a deadline with verbose_name='all picks'
+
 # Tests
 
 All tests are in the picks/test/ directory.
