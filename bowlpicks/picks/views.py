@@ -9,6 +9,7 @@ from picks.models import Game
 from picks.models import Pick
 from picks.models import Participant
 from picks.models import Team
+from picks.models import Deadlines
 
 from .forms import EditPicksForm
 from .forms import AddGameForm
@@ -19,8 +20,13 @@ from .forms import AddScoreForm
 
 from django.db.models import Min
 
+from picks.logic import scoreGroup
+
 import logging
 logging = logging.getLogger(__name__)
+
+from datetime import date
+
 
 
 def index(request):
@@ -31,6 +37,9 @@ def index(request):
 
 @login_required
 def editPicks(request, userid, pickid):
+    deadline = Deadlines.objects.get(verbose_name='all picks').date
+    if deadline <= date.today():
+        return HttpResponse('FAILED: The date has already passed to edit this pick. <a href="/group-picks">back</a>')
     existing_pick = Pick.objects.get(id=pickid)
     if request.method == "POST":
         # If we get data from request then create form with it.
@@ -104,12 +113,27 @@ def adminPage(request):
 
 @login_required
 def groupPicks(request, layout='users', userorgame=None):
+    # TODO: fix the coupling of this view to template
+    # TODO: Split this view into two or more views?
     if userorgame == None and layout == 'users':
         # Default to the signedin user's participant self.
-        userorgame = Participant.objects.filter(user=request.user).get(is_self=True)
+        userorgame = Participant.objects.filter(user=request.user).get(is_self=True).id
     elif userorgame == None and layout == 'games':
         # Default to the minimum id in Game
         userorgame = Game.objects.aggregate(id=Min("id"))['id']
+
+    # Get a dictionary of games
+    # scores = {}
+    # score_query = Game.objects.all()
+    # for score in score_query:
+    #     d = {}
+    #     d['game_name'] = score.bowl
+    #     d['team1_score'] = score.team1
+    #     d['team2_score'] = score.team2
+    #     d['team1'] = score.team1
+    #     d['team2'] = score.team2
+    #     scores[score.id] = d
+    # TODO: Use this dict for game_query and title (game conditional).
     
     user_query = Participant.objects.all()
     users = [(x.id, x.name) for x in user_query]
@@ -121,20 +145,28 @@ def groupPicks(request, layout='users', userorgame=None):
 
     if layout == "users":
         pick_query = Pick.objects.filter(owner=userorgame)
+        # Make a dictionary of the picks with respects to single user
         for pick in pick_query:
             d = {}
             d['winby'] = pick.winby
             d['winner'] = pick.winner
             d['loser'] = pick.get_loser()
+            # d['actual_winner'] =
             picks[pick.game.bowl] = d
+        title = Participant.objects.get(id=userorgame).name
     else:
         game_query = Pick.objects.filter(game=userorgame)
+        # Make a dictionary of the picks with respects to single game
+        selected_game = Game.objects.get(id=userorgame)
+        games['game_info'] = selected_game
+        games['picks']={}
         for pick in game_query:
             d = {}
             d['winby'] = pick.winby
             d['winner'] = pick.winner
             d['loser'] = pick.get_loser()
-            games[pick.owner.name] = d
+            games['picks'][pick.owner.name] = d
+        title = Game.objects.get(id=userorgame).bowl
 
     return render(request, 'group_picks.html', {
         "users": users,
@@ -142,7 +174,9 @@ def groupPicks(request, layout='users', userorgame=None):
         "bowls": bowls,
         "picks": picks,
         "layout": layout,
-        "userorgame":userorgame})
+        "title": title,
+        # "score": scores if layout == "users" else f'{scores.id}'
+        })
 
 
 
@@ -153,6 +187,7 @@ def login(request):
 
 @login_required
 def myPicks(request, user=None):
+    is_passed_deadline = True if Deadlines.objects.get(verbose_name='all picks').date <= date.today() else False
     if user == None:
         # If not given a user id then we use the signed in user's participant self.
         user = Participant.objects.filter(user=request.user).get(is_self=True).id
@@ -168,7 +203,12 @@ def myPicks(request, user=None):
              if x.winner != None and x.winby != None]
     
 
-    return render(request, 'my_picks.html', {"linked_users": linked_users, "selected": selected_user, "picks": picks})
+    return render(request, 'my_picks.html',
+                  {"linked_users": linked_users,
+                   "selected": selected_user,
+                   "picks": picks,
+                   "is_passed_deadline": is_passed_deadline,
+                   })
 
 
 
@@ -355,3 +395,10 @@ def deleteParticipant(request, userid):
 def myParticipants(request, paricipantid):
     # TODO Migrate code from account to here for participant managment.
     pass
+
+@login_required
+def scores(request):
+    """Render a page that has all the scores for the games that have both scores inputed."""
+    # Order by decreasing score
+    scores = sorted(scoreGroup(), key=lambda tup: tup[2], reverse=True)
+    return render(request, 'scores.html', {"scores": scores})

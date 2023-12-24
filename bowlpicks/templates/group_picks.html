@@ -5,11 +5,22 @@ Group Picks
 {% endblock %}
 
 {% block contentTitle %}
-Group Picks
+    {% if layout == "users" %}
+        Picks for {{ title }}
+    {% else %}
+        {{ title }}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 
+    <center>
+        {% if games.game_info.is_complete %}
+            Results: {{ games.game_info.get_winner }} beats {{ games.game_info.get_loser }} {{ games.game_info.team1_score }}-{{ games.game_info.team2_score}}
+        {% else %}
+            No Results
+        {% endif %}
+    </center>
     <!--Buttons for layout options-->
     {% if layout == "users" %}
         <div class="btn-group btn-group-toggle mb-3" data-toggle="buttons">
@@ -63,7 +74,7 @@ Group Picks
                     </tr>
                     {% endfor %}
                 {% else %}
-                    {% for user, pick in games.items %}
+                    {% for user, pick in games.picks.items %}
                     <tr>
                         <th scope="row">{{user}}</th>
                         <th>{{pick.winner}} beats {{pick.loser}} by {{pick.winby}}</th>

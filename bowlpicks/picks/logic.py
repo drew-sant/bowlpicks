@@ -12,7 +12,7 @@ logging = logging.getLogger(__name__)
 # exact plus 1
 
 def scoreGroup() -> list[tuple]:
-    """Return a list of tuples that contain a participant's id, their name, and their overall score."""
+    """Return a list of tuples that contain a participant's id and their overall score."""
     # get the group picks
     games = {}
     all_games = Game.objects.all().exclude(team1_score=None).exclude(team2_score=None)
@@ -28,7 +28,7 @@ def scoreGroup() -> list[tuple]:
     if games == {}:
         # If their are no games that have scores then return everyone with a score of 0
         parti = Participant.objects.all()
-        return [(x.id, 0) for x in parti]
+        return [(x.id, x.name, 0) for x in parti]
 
     # variable for closest (smallest difference value)
     participants_scores = {}
@@ -69,27 +69,31 @@ def scoreGroup() -> list[tuple]:
             for id in plus:
                 participants_scores[id] = participants_scores[id] + 1
     list_scores = [(id, score) for id, score in participants_scores.items()]
+
+    # Add participant's name to each tuple in list
+    list_scores = [(id, Participant.objects.get(id=id).name, score) for id, score in list_scores]
+
     # output a list of tuples in the form of [(participant_id, score)]
     return list_scores
 
-def scoreGame(picks: dict) -> list[tuple]:
-    """Return a list of tuples of each participant's scores
-    [(participant_id, score)]
-    """
-    return [(None, None)]
+# def scoreGame(picks: dict) -> list[tuple]:
+#     """Return a list of tuples of each participant's scores
+#     [(participant_id, score)]
+#     """
+#     return [(None, None)]
 
-def getAllGameScore() -> dict:
-    """Return a dictionary of the game name, score of team1, and score of team2
-    """
-    return {}
+# def getAllGameScore() -> dict:
+#     """Return a dictionary of the game name, score of team1, and score of team2
+#     """
+#     return {}
 
-def getGroupPicksByGame() -> dict:
-    """Return a dictionary with each game and the participant's picks for each game.
-    {'bowlgame1':
-        {'participant1':
-            {'winner': Team, 'winby' int},
-        },
-        ...
-    }
-    """
-    return {}
+# def getGroupPicksByGame() -> dict:
+#     """Return a dictionary with each game and the participant's picks for each game.
+#     {'bowlgame1':
+#         {'participant1':
+#             {'winner': Team, 'winby' int},
+#         },
+#         ...
+#     }
+#     """
+#     return {}

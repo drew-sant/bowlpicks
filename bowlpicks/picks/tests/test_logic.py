@@ -87,7 +87,7 @@ class TestScoreGroup(TestCase):
             else:
                 Pick.objects.create(owner=part, winner=team2, winby=x[2], game=game)
         
-        self.results = list(zip([p.id for p in participants], score))
+        self.results = list(zip([p.id for p in participants], [p.name for p in participants], score))
 
     def test_right_score_exact(self):
         correct_scores = self.results
@@ -205,7 +205,7 @@ class TestScoreGroupSomeGamesNoScore(TestCase):
             else:
                 Pick.objects.create(owner=part, winner=team2, winby=x[2], game=game)
 
-        self.results = list(zip([p.id for p in participants], score))
+        self.results = list(zip([p.id for p in participants], [p.name for p in participants], score))
 
     def test_right_score_exact(self):
         correct_scores = self.results
@@ -287,7 +287,7 @@ class TestScoreGroupAllGamesNoScore(TestCase):
                 Pick.objects.create(owner=part, winner=team2, winby=x[2], game=game)
 
         score = [0, 0, 0, 0, 0, 0, 0]
-        self.results = list(zip([p.id for p in participants], score))
+        self.results = list(zip([p.id for p in participants], [p.name for p in participants], score))
 
     def test_right_score_exact(self):
         correct_scores = self.results
@@ -369,7 +369,7 @@ class TestScoreGroupOneGameHasScore(TestCase):
             else:
                 Pick.objects.create(owner=part, winner=team2, winby=x[2], game=game)
 
-        self.results = list(zip([p.id for p in participants], score))
+        self.results = list(zip([p.id for p in participants], [p.name for p in participants], score))
 
     def test_right_score_exact(self):
         correct_scores = self.results
