@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+Scores
+{% endblock %}
+
+{% block contentTitle %}
+Scores
+{% endblock %}
+
+{% block content %}
+<center>
+<div class="pt-5">
+    <table>
+        {% for score in scores %}
+            <tr>
+                <td>{{score.1}}</td>
+                <td>{{score.2}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</center>
+{% endblock %}

@@ -16,9 +16,36 @@ class Game(models.Model):
     team1 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team1")
     team2 = models.ForeignKey(Team, on_delete=models.CASCADE, related_name="team2")
     date = models.DateField()
+    team1_score = models.PositiveBigIntegerField("Team 1 Score", null=True)
+    team2_score = models.PositiveBigIntegerField("Team 2 Score", null=True)
 
     def __str__(self):
         return f'{self.bowl}: {self.team1} vs {self.team2} @ {self.date}'
+    
+    def is_complete(self):
+        '''Returns a bool showing if the game is complete.
+        Complete is defined as both scores are inputted for the teams.
+        '''
+        if self.team1_score == None or self.team2_score == None:
+            return False
+        else:
+            return True
+    
+    def get_winner(self):
+        if not self.is_complete() or self.team1_score == self.team2_score:
+            # Return None if both scores are not added or if it was a tie (which doesn't happen in
+            # football but for programming sake I will account for it).
+            return None
+        else:
+            return self.team1 if self.team1_score > self.team2_score else self.team2
+    
+    def get_loser(self):
+        if not self.is_complete() or self.team1_score == self.team2_score:
+            # Return None if both scores are not added or if it was a tie (which doesn't happen in
+            # football but for programming sake I will account for it).
+            return None
+        else:
+            return self.team1 if self.team1_score < self.team2_score else self.team2
 
 class Participant(models.Model):
     name = models.CharField(max_length=30)
@@ -58,4 +85,10 @@ class Pick(models.Model):
     
     class Meta:
         order_with_respect_to = "owner"
-    
+
+class Deadlines(models.Model):
+    verbose_name = models.CharField(max_length=30)
+    date = models.DateField()
+
+    def __str__(self):
+        return f'{self.verbose_name} at {self.date}'

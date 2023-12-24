@@ -3,10 +3,7 @@ Each model is tested in its own seperate class.
 """
 
 from django.test import TestCase
-from picks.models import Pick
-from picks.models import Game
-from picks.models import Team
-from picks.models import Participant
+from picks.models import Pick, Game, Team, Participant
 from django.contrib.auth.models import User
 
 
@@ -95,6 +92,16 @@ class GameModelTest(TestCase):
         game = Game.objects.get(id=1)
         field_label = game._meta.get_field('team2').verbose_name
         self.assertEquals(field_label, 'team2')
+
+    def test_team1_score_label(self):
+        game = Game.objects.get(id=1)
+        field_label = game._meta.get_field('team1_score').verbose_name
+        self.assertEquals(field_label, 'Team 1 Score')
+    
+    def test_team2_score_label(self):
+        game = Game.objects.get(id=1)
+        field_label = game._meta.get_field('team2_score').verbose_name
+        self.assertEquals(field_label, 'Team 2 Score')
     
     def test_str_(self):
         game = Game.objects.get(id=1)

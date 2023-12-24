@@ -16,15 +16,16 @@ Setup
         {{ form.as_p }}
         <input type="submit" value="Save">
     </form>
-    
-    <div class="pt-5">
-        <list>
-            <!--List all games-->
-            {% for game in games %}
-                <ul> {{ game.1 }} <a href="/setup/{{game.0}}">edit</a> <a href="/deletegame/{{game.0}}">delete</a></ul>
-            {% endfor %}
-        </list>
-    </div>
+
+<div class="pt-5">
+    <list>
+    {% for game in games %}
+            <ul> {{ game.1 }} <a href="/setup/{{game.0}}">edit</a> <a href="/deletegame/{{game.0}}">delete</a>
+                <a href="/addscore/{{game.0}}">score</a>
+            </ul>
+    {% endfor %}
+    </list>
+</div>
 
     <!--Some links for admin-->
     <div class="pt-5">

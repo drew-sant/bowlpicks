@@ -33,5 +33,5 @@ venv/
 
 mysecrets.py
 
-# A script that I made to list todos
+# Script that I made to find todo's
 pytodo.py
