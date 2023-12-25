@@ -549,8 +549,8 @@ class DeleteGameViewTest(TestCase):
 class LoginViewTest(TestCase):
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/login')
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/accounts/login')
+        self.assertEqual(response.status_code, 301)
 
     def test_view_url_accessible_by_name(self):
         response = self.client.get(reverse('login'))
