@@ -181,32 +181,24 @@ def register(request):
     if request.method == 'POST':
         form = RegisterUserForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data['groupcode'] != GROUPCODE:
-                # If the groupcode doesn't match then don't register user.
-                return HttpResponse("FAILED. Incorrect groupcode. Group doesn't exist. <a href= '/register'>Back</a>")
-            elif form.cleaned_data['password'] != form.cleaned_data['password']:
-                # Make sure both password fields match each other.
-                return HttpResponse("FAILED. Passwords do not match. <a href= '/register'>Back</a>")
-                #TODO Change this to be part of form validation.
-            else:
-                # Create new user.
-                user = User.objects.create_user(form.cleaned_data['username'])
-                user.set_password(form.cleaned_data['password'])
-                user.save()
-                logging.info(f'USER CREATED: user: "{user.username}" was created.')
-                # Create a new participant associated with the new user's self.
-                new_participant = Participant(name=form.cleaned_data['username'].capitalize(), user=user, is_self=True)
-                new_participant.save()
-                logging.info(f'PARTICIPANT CREATED: Participant: "{new_participant.name}" was created automatically for "{user.username}" and is_self=True')
-
-                # Create pick for every game for the new participant.
-                query_games = Game.objects.all()
-                for g in query_games:
-                    new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
-                    new_pick.save()
-                    logging.info(f'PICK CREATED: Pick: "{str(new_pick)}" was created automatically when participant: "{new_participant.name}" was created.')
-
-                return HttpResponseRedirect("login")
+            # Create new user.
+            user = User.objects.create_user(form.cleaned_data['username'])
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            logging.info(f'USER CREATED: user: "{user.username}" was created.')
+            # Create a new participant associated with the new user's self.
+            new_participant = Participant(name=form.cleaned_data['username'].capitalize(), user=user, is_self=True)
+            new_participant.save()
+            logging.info(f'PARTICIPANT CREATED: Participant: "{new_participant.name}" was created automatically for "{user.username}" and is_self=True')
+            # Create pick for every game for the new participant.
+            query_games = Game.objects.all()
+            for g in query_games:
+                new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
+                new_pick.save()
+                logging.info(f'PICK CREATED: Pick: "{str(new_pick)}" was created automatically when participant: "{new_participant.name}" was created.')
+            return HttpResponseRedirect("accounts/login")
+        else:
+            return render(request, 'register.html', {'form': form})
     else:
         form =RegisterUserForm()
         return render(request, 'register.html', {'form': form})
