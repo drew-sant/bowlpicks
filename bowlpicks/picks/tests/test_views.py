@@ -105,25 +105,6 @@ class AccountViewTest(TestCase):
         # self.assertEqual(str(response.context['user']), 'user1')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'account.html')
-    
-    def test_view_has_form(self):
-        login = self.client.login(username='user1', password='nachocheese')
-        response = self.client.get('/account')
-        # self.assertEqual(str(response.context['user']), 'user1')
-        self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(response.context['form'], AddParticipantForm)
-
-    def test_with_userid_sent(self):
-        """See if a userid can be sent"""
-        login = self.client.login(username='user1', password='nachocheese')
-        response = self.client.get('/account/1')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_view_has_list(self):
-        """Make sure we are getting a list sent to the template"""
-        login = self.client.login(username='user1', password='nachocheese')
-        response = self.client.get('/account')
-        self.assertIsInstance(response.context['linkedUsers'], list)
 
 
 
@@ -445,7 +426,7 @@ class DeleteParticipantViewTest(TestCase):
         login = self.client.login(username='user1', password='nachocheese')
         response = self.client.get('/deletepart/1')
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/account')
+        self.assertRedirects(response, '/my-participants')
         self.assertNotEqual(response.content,
                             b"FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
     
@@ -472,7 +453,7 @@ class DeleteParticipantViewTest(TestCase):
         login = self.client.login(username='user1', password='nachocheese')
         response = self.client.get(reverse('deletepart', kwargs={'userid': 1}))
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/account')
+        self.assertRedirects(response, '/my-participants')
 
 
 
@@ -571,8 +552,8 @@ class DeleteGameViewTest(TestCase):
 class LoginViewTest(TestCase):
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/login')
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/accounts/login')
+        self.assertEqual(response.status_code, 301)
 
     def test_view_url_accessible_by_name(self):
         response = self.client.get(reverse('login'))
@@ -812,7 +793,88 @@ class ScoresViewTest(TestCase):
         response = self.client.get(reverse('scores'))
         self.assertTemplateUsed(response, 'scores.html')
 
+
+
 class MyParticipantsTest(TestCase):
     def setUp(self):
-        pass
-    # TODO Write tests for myParticipants view.
+        # Create users
+        test_user1 = User.objects.create_user(username='user1', password = 'nachocheese')
+        # Create participant
+        parti = Participant.objects.create(name='puser1',user=test_user1,is_self=True)
+        # parti2 - goes with the second pick we make (planning on making game+participant to be unique).
+        parti2 = Participant.objects.create(name='johan',user=test_user1,is_self=False)
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.get('/my-participants')
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/my-participants')
+
+    def test_view_url_exists_at_desired_location(self):
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get('/my-participants')
+        self.assertEqual(str(response.context['user']), 'user1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get(reverse('myParticipants'))
+        # self.assertEqual(str(response.context['user']), 'user1')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get('/my-participants')
+        # self.assertEqual(str(response.context['user']), 'user1')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'my_participants.html')
+    
+    def test_view_has_form(self):
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get('/my-participants')
+        # self.assertEqual(str(response.context['user']), 'user1')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context['form'], AddParticipantForm)
+        # TODO Add an assert to test that form is filled with content if participantid is provided.
+
+    def test_with_userid_sent(self):
+        """See if a userid can be sent"""
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get('/my-participants/1')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_view_has_list(self):
+        """Make sure we are getting a list sent to the template"""
+        login = self.client.login(username='user1', password='nachocheese')
+        response = self.client.get('/my-participants')
+        self.assertIsInstance(response.context['usersParticipants'], list)
+
+""" TODO dElEtE BeFoRe ComMiT
+
+
+myParticipants
+
+view
+myParticipants(participantid) ->
+participantForm, usersParticipants list [(id, name, is_self), ...], my_participants.html, 
+
+
+form
+AddParticpantForm - already made and tested
+
+
+model
+Participant
+name
+user
+is_self
+
+
+template
+my_participants.html
+
+
+url
+path("my-participants/", views.myParticipants, name="myParticipants"),
+path("my-participants/<int:participantid>", views.myParticipants, name="myParticipantsid"),
+
+"""

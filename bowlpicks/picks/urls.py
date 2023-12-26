@@ -15,7 +15,7 @@ urlpatterns = [
     path("group-picks/<str:layout>", views.groupPicks, name="groupPickslayout"),
     path("my-picks/<int:user>", views.myPicks, name="myPicksid"),
     path("my-picks", views.myPicks, name="myPicks"),
-    path("login", views.login, name="login"),
+    # path("login", views.login, name="login"),
     path("register", views.register, name="register"),
     path("setup", views.setup, name="setup"),
     path("setup/<int:gameid>", views.setup, name="setupid"),
@@ -28,4 +28,6 @@ urlpatterns = [
     path("deletescore/<int:gameid>", views.deleteScore, name="delete_score"),
     path("scores", views.scores, name="scores"),
     # TODO Add two urls for myParticipants view
+    path("my-participants", views.myParticipants, name="myParticipants"),
+    path("my-participants/<int:participantid>", views.myParticipants, name="myParticipantsid"),
 ]

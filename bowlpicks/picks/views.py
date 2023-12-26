@@ -70,13 +70,17 @@ def editPicks(request, userid, pickid):
 
 
 @login_required
-def account(request, userid=None):
+def account(request):
+    return render(request, 'account.html')
+
+@login_required
+def myParticipants(request, participantid=None):
     query = Participant.objects.filter(user=request.user)
-    linked_users = [(x.id, x.name, x.is_self) for x in query]
+    participants = [(x.id, x.name, x.is_self) for x in query]
 
     if request.method == "POST":
         form = AddParticipantForm(request.POST)
-        if form.is_valid() and userid==None:
+        if form.is_valid() and participantid==None:
             # If no userid then create new participant
             new_participant = Participant(name=form.cleaned_data["name"].capitalize(), user=request.user, is_self=False)
             new_participant.save()
@@ -91,17 +95,17 @@ def account(request, userid=None):
 
             return HttpResponseRedirect("")
         
-        if form.is_valid() and userid != None:
-            # If recived a user id then we will change an existing user.
-            existing_participant = Participant.objects.get(id=userid)
+        if form.is_valid() and participantid != None:
+            # If received a user id then we will change an existing user.
+            existing_participant = Participant.objects.get(id=participantid)
             old_name = existing_participant.name # for logging purposes
             existing_participant.name = form.cleaned_data["name"]
             existing_participant.save()
             logging.info(f'PARTICIPANT EDITED: participant: "{old_name}" was changed to {existing_participant.name} by user: {request.user.username}')
             return HttpResponseRedirect("")
     else:
-        form = AddParticipantForm(instance=Participant.objects.get(id=userid)) if userid != None else AddParticipantForm()
-    return render(request, 'account.html', {"registerForm": form, 'linkedUsers': linked_users})
+        form = AddParticipantForm(instance=Participant.objects.get(id=participantid)) if participantid != None else AddParticipantForm()
+    return render(request, 'my_participants.html', {"participantForm": form, 'usersParticipants': participants})
 
 
 
@@ -226,32 +230,24 @@ def register(request):
     if request.method == 'POST':
         form = RegisterUserForm(request.POST)
         if form.is_valid():
-            if form.cleaned_data['groupcode'] != GROUPCODE:
-                # If the groupcode doesn't match then don't register user.
-                return HttpResponse("FAILED. Incorrect groupcode. Group doesn't exist. <a href= '/register'>Back</a>")
-            elif form.cleaned_data['password'] != form.cleaned_data['password']:
-                # Make sure both password fields match each other.
-                return HttpResponse("FAILED. Passwords do not match. <a href= '/register'>Back</a>")
-                #TODO Change this to be part of form validation.
-            else:
-                # Create new user.
-                user = User.objects.create_user(form.cleaned_data['username'])
-                user.set_password(form.cleaned_data['password'])
-                user.save()
-                logging.info(f'USER CREATED: user: "{user.username}" was created.')
-                # Create a new participant associated with the new user's self.
-                new_participant = Participant(name=form.cleaned_data['username'].capitalize(), user=user, is_self=True)
-                new_participant.save()
-                logging.info(f'PARTICIPANT CREATED: Participant: "{new_participant.name}" was created automatically for "{user.username}" and is_self=True')
-
-                # Create pick for every game for the new participant.
-                query_games = Game.objects.all()
-                for g in query_games:
-                    new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
-                    new_pick.save()
-                    logging.info(f'PICK CREATED: Pick: "{str(new_pick)}" was created automatically when participant: "{new_participant.name}" was created.')
-
-                return HttpResponseRedirect("login")
+            # Create new user.
+            user = User.objects.create_user(form.cleaned_data['username'])
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            logging.info(f'USER CREATED: user: "{user.username}" was created.')
+            # Create a new participant associated with the new user's self.
+            new_participant = Participant(name=form.cleaned_data['username'].capitalize(), user=user, is_self=True)
+            new_participant.save()
+            logging.info(f'PARTICIPANT CREATED: Participant: "{new_participant.name}" was created automatically for "{user.username}" and is_self=True')
+            # Create pick for every game for the new participant.
+            query_games = Game.objects.all()
+            for g in query_games:
+                new_pick = Pick(game=g, winner=None, winby=None, owner=new_participant)
+                new_pick.save()
+                logging.info(f'PICK CREATED: Pick: "{str(new_pick)}" was created automatically when participant: "{new_participant.name}" was created.')
+            return HttpResponseRedirect("accounts/login")
+        else:
+            return render(request, 'register.html', {'form': form})
     else:
         form =RegisterUserForm()
         return render(request, 'register.html', {'form': form})
@@ -395,7 +391,7 @@ def deleteParticipant(request, userid):
         # AND the participant isn't the user's own self will it be allowed deletion.
         participant.delete()
         logging.info(f'PARTICIPANT DELETED: {request.user.username} deleted {participant.name}')
-        return HttpResponseRedirect("/account")
+        return HttpResponseRedirect("/my-participants")
     else:
         return HttpResponse("FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
 
