@@ -416,11 +416,16 @@ class AddTeamViewTest(TestCase):
 class DeleteParticipantViewTest(TestCase):
     def setUp(self):
         # Create users
-        test_user1 = User.objects.create_user(username='user1', password = 'nachocheese')
-        test_user2 = User.objects.create_user(username='user2', password = 'nachocheese')
+        test_user1 = User.objects.create_user(username='user1')
+        test_user1.set_password('nachocheese')
+        test_user1.save()
+        test_user2 = User.objects.create_user(username='user2')
+        test_user2.set_password('nachocheese')
+        test_user2.save()
+
         # Create participant
-        parti1 = Participant.objects.create(name='puser1',user=test_user1,is_self=False)
-        parti2 = Participant.objects.create(name='puser1',user=test_user1,is_self=True)
+        parti1 = Participant.objects.create(name='puser1', user=test_user1, is_self=False)
+        parti2 = Participant.objects.create(name='puser1', user=test_user1, is_self=True)
 
     def test_view_url_exists_at_desired_location(self):
         login = self.client.login(username='user1', password='nachocheese')
@@ -847,34 +852,3 @@ class MyParticipantsTest(TestCase):
         login = self.client.login(username='user1', password='nachocheese')
         response = self.client.get('/my-participants')
         self.assertIsInstance(response.context['usersParticipants'], list)
-
-""" TODO dElEtE BeFoRe ComMiT
-
-
-myParticipants
-
-view
-myParticipants(participantid) ->
-participantForm, usersParticipants list [(id, name, is_self), ...], my_participants.html, 
-
-
-form
-AddParticpantForm - already made and tested
-
-
-model
-Participant
-name
-user
-is_self
-
-
-template
-my_participants.html
-
-
-url
-path("my-participants/", views.myParticipants, name="myParticipants"),
-path("my-participants/<int:participantid>", views.myParticipants, name="myParticipantsid"),
-
-"""

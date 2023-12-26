@@ -129,19 +129,6 @@ def groupPicks(request, layout='users', userorgame=None):
     elif userorgame == None and layout == 'games':
         # Default to the minimum id in Game
         userorgame = Game.objects.aggregate(id=Min("id"))['id']
-
-    # Get a dictionary of games
-    # scores = {}
-    # score_query = Game.objects.all()
-    # for score in score_query:
-    #     d = {}
-    #     d['game_name'] = score.bowl
-    #     d['team1_score'] = score.team1
-    #     d['team2_score'] = score.team2
-    #     d['team1'] = score.team1
-    #     d['team2'] = score.team2
-    #     scores[score.id] = d
-    # TODO: Use this dict for game_query and title (game conditional).
     
     user_query = Participant.objects.all()
     users = [(x.id, x.name) for x in user_query]
@@ -394,11 +381,6 @@ def deleteParticipant(request, userid):
         return HttpResponseRedirect("/my-participants")
     else:
         return HttpResponse("FAILED. Participant doesn't belong to current user or participant is self. <a href= '/account'>Back</a>")
-
-@login_required
-def myParticipants(request, paricipantid):
-    # TODO Migrate code from account to here for participant managment.
-    pass
 
 @login_required
 def scores(request):
