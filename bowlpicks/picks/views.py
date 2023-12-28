@@ -252,7 +252,7 @@ def setup(request, gameid=None):
         if form.is_valid() and gameid == None:
             # Create new game if no gameid is provided
             data = form.cleaned_data
-            new_game = Game(bowl=data["bowl"], team1=data["team1"], team2=data["team2"], date=data["date"])
+            new_game = Game(bowl=data["bowl"], team1=data["team1"], team2=data["team2"], date=data["date"], team1_score=None, team2_score=None)
             new_game.save()
             logging.info(f'GAME CREATED: game: "{str(new_game)}" was created by user: "{request.user.username}"')
 

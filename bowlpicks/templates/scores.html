@@ -10,15 +10,23 @@ Scores
 
 {% block content %}
 <center>
-<div class="pt-5">
-    <table>
-        {% for score in scores %}
-            <tr>
-                <td>{{score.1}}</td>
-                <td>{{score.2}}</td>
-            </tr>
-        {% endfor %}
+<div class="col-md-5">
+    &nbsp;
+</div>
+<div class="col-md-2 pt-5">
+    <table class="table table-striped">
+        <tbody>
+            {% for score in scores %}
+                <tr>
+                    <td>{{score.1}}</td>
+                    <td>{{score.2}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
+</div>
+<div class="col-md-5">
+    &nbsp;
 </div>
 </center>
 {% endblock %}
